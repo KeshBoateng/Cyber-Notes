@@ -53,3 +53,55 @@ My Wifi Adapters IPV4 address
 \ 255.255.255.0
 \ 10.187.149.25
 
+DAY3:
+TLD (Top-Level Domain)
+A TLD is the most righthand part of a domain name. So, for example, the tryhackme.com TLD is .com. There are two types of TLD, gTLD (Generic Top Level) and ccTLD (Country Code Top Level Domain). Historically a gTLD was meant to tell the user the domain name's purpose; for example, a .com would be for commercial purposes, .org for an organisation, .edu for education and .gov for government. And a ccTLD was used for geographical purposes, for example, .ca for sites based in Canada, .co.uk for sites based in the United Kingdom and so on. Due to such demand, there is an influx of new gTLDs ranging from .online , .club , .website , .biz and so many more.
+
+Second-Level Domain:
+Taking tryhackme.com as an example, the .com part is the TLD, and tryhackme is the Second Level Domain. When registering a domain name, the second-level domain is limited to 63 characters + the TLD and can only use a-z 0-9 and hyphens (cannot start or end with hyphens or have consecutive hyphens).
+
+Subdomain:
+A subdomain sits on the left-hand side of the Second-Level Domain using a period to separate it; for example, in the name admin.tryhackme.com the admin part is the subdomain. A subdomain name has the same creation restrictions as a Second-Level Domain, being limited to 63 characters and can only use a-z 0-9 and hyphens (cannot start or end with hyphens or have consecutive hyphens). You can use multiple subdomains split with periods to create longer names, such as jupiter.servers.tryhackme.com. But the length must be kept to 253 characters or less. There is no limit to the number of subdomains you can create for your domain name.
+
+
+ The journey, step by step
+
+1. Your computer checks its own cache
+Have I looked this up recently? If yes, done.
+If no, ask the Recursive DNS Server.
+
+2. Recursive DNS Server
+Usually your ISP’s, but you can choose another one.
+It has its own cache. Popular sites (Google, Facebook) are usually found here, so the search ends quickly.
+If it’s not cached, it starts the long search at the root servers.
+
+3. Root servers
+They don’t know the answer, but they know who to ask next.
+They look at the ending of the domain (.com, .org, etc.) and send you to the right TLD server.
+
+4. TLD (Top Level Domain) server
+Handles one ending, e.g. all .com domains.
+It points you to the domain’s authoritative server (nameserver).
+Example: tryhackme.com → kip.ns.cloudflare.com and uma.ns.cloudflare.com.
+Domains have several nameservers as backups in case one goes down.
+
+5. Authoritative server
+This is the one that actually holds the DNS records for the domain.
+It’s also where the domain owner makes changes to the records.
+It sends the answer back to the Recursive server, which saves a copy and passes it to your computer.
+Quick flow
+Your computer cache
+      ↓ (not found)
+Recursive DNS Server (cache)
+      ↓ (not found)
+Root Server → "Go to the .com TLD"
+      ↓
+TLD Server → "Go to this nameserver"
+      ↓
+Authoritative Server → gives the IP address
+      ↓
+Answer travels back and gets cached
+
+
+HANDS-ON work
+
