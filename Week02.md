@@ -42,3 +42,14 @@ Ping is a network tool that uses ICMP (Internet Control Message Protocol) packet
  
 The time taken for ICMP packets travelling between devices is measured by ping.This measuring is done using ICMP's echo packet and then ICMP's echo reply from the target device.
 
+NAT (Network Address Translation): your router swaps your
+private address for its public one on the way out, and back on
+the way in. So websites see the router's public address, never
+your 192.168 one.
+When your PC requests a webpage, it sends the request to your phone using its local 10. address. Your phone strips away that private tag, attaches its own public 102. address to the packet, and blasts it out to the internet. When the website replies, the phone does the reverse—passing the data back to your PC's private address
+
+My Wifi Adapters IPV4 address
+\10.187.149.32
+\ 255.255.255.0
+\ 10.187.149.25
+
