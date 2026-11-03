@@ -30,7 +30,15 @@ the computer uses the DNS to lookup domain names and get the associated ip addre
 
 So basically the client asks a DNS server for the ip address of a site the server asks another DNS server and when it finds it is sent back till it reaches the client and then it finally connects to the ip and sends its request
 
+A network is a bunch of devices connected to each other
+
 The DNS servers are connected in a distributed hierarchy
 
 DNS spoofing:
 It is when a hacker taps into a DNS server and changes the ip address of a site to that of their own ip so as to impersonate the website so that clients may accidentally connect to it.
+Each section of an IP is called an octet
+
+Ping is a network tool that uses ICMP (Internet Control Message Protocol) packets to determine the performance of a connection between devices, for example, if the connection exists or is reliable.
+ 
+The time taken for ICMP packets travelling between devices is measured by ping.This measuring is done using ICMP's echo packet and then ICMP's echo reply from the target device.
+
