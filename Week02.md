@@ -104,4 +104,28 @@ Answer travels back and gets cached
 
 
 HANDS-ON work
+Name:    google.com
+Addresses:  2a00:1450:4003:804::200e
+          142.251.140.238
 
+MX Lookup:gmail.com       MX preference = 5, mail exchanger = gmail-smtp-in.l.google.com    
+
+
+Windows IP Configuration
+
+    tryhackme.com
+    ----------------------------------------
+    Record Name . . . . . : tryhackme.com
+    Record Type . . . . . : 1
+    Time To Live  . . . . : 247
+    Data Length . . . . . : 4
+    Section . . . . . . . : Answer
+    A (Host) Record . . . : 64.239.109.129
+
+
+    Record Name . . . . . : tryhackme.com
+    Record Type . . . . . : 1
+    Time To Live  . . . . : 247
+    Data Length . . . . . : 4
+    Section . . . . . . . : Answer
+    A (Host) Record . . . : 64.239.123.129
