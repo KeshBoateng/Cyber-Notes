@@ -129,3 +129,94 @@ Windows IP Configuration
     Data Length . . . . . : 4
     Section . . . . . . . : Answer
     A (Host) Record . . . : 64.239.123.129
+
+
+
+DAY4:
+
+1. Packets
+Packet = a small piece of data with a label.
+Think of moving a wardrobe from Kumasi to Accra in labelled pieces: “3 of 20, to Ama, Accra.” Pieces can take different trucks and arrive in any order. Ama rebuilds it from the labels.
+A packet has two parts:
+Header: from, to, and the packet number
+Payload: the actual data
+From: 192.168.8.101
+To:   142.250.200.14
+Packet 3 of 20, TTL 64
+PAYLOAD: ...a piece of the page
+
+Why use packets?
+
+A lost piece is cheap to resend
+Many people can share the same cables
+2. Routers, hops and TTL
+
+Router: reads each packet’s destination IP and sends it one step closer.
+Hop: one router along the way. (Trotro idea: Kejetia → Circle → Kaneshie. Each station is a hop.)
+TTL (Time To Live): a countdown that starts at a number like 64 or 128. Every router subtracts 1. At 0 the packet is thrown away, so lost packets can’t circle forever.
+
+You (TTL 64) → Router (63) → ISP (62) → Server gets 62
+
+Hop 1 is always your own router, your Default Gateway.
+tracert uses TTL to map the path. It sends packets with TTL 1, then 2, then 3, and so on. Each router in turn drops the packet and reports back, so you see every hop.
+Don’t mix up the two TTLs: DNS TTL = seconds a saved answer lasts. Packet TTL = number of hops left.
+
+3. TCP vs UDP
+	TCP	UDP
+Promise	Every packet arrives, in order. Lost ones are resent	Sent once, no checking, no resending
+Start	Handshake: “Hello?” “Hello, ready” “OK, sending”	None, just sends
+Speed	Slower	Faster
+Used for	Web pages, email, downloads, MoMo payments	Calls, video, live streams, games, DNS lookups
+Like	Registered parcel with a signature	Shouting across the road
+
+How to choose:
+
+Every byte must arrive (file, payment) → TCP
+Speed matters more than a lost bit (WhatsApp call) → UDP
+4. When packets go wrong
+Packet loss: packets that never arrive
+Latency: delay, measured in ms. Far servers and busy networks add more
+DDoS: flooding a server with so many packets that real ones can’t get through (attacks availability)
+
+Weak network example: a WhatsApp call breaks up (lost UDP packets) and lags. A download on the same network is slow, but the file arrives complete because TCP resends.
+
+5. Reading ping -n 20
+	Good network	Weak network
+Lost	0 (0% loss)	3 (15% loss)
+Min / Max	40 ms / 55 ms	60 ms / 900 ms
+
+What to look for: loss above 0% and a big gap between minimum and maximum both point to a weak or busy network.
+Quick memory list
+Data is split into packets (header + payload)
+Routers pass packets along, one hop at a time
+TTL drops by 1 per hop and kills lost packets at 0
+tracert uses TTL to show the path
+TCP = reliable but slower. UDP = fast but may lose data
+Loss and latency show network health in ping
+
+
+Difference Between TCP and UDP
+When the TCP is used,packets are sent in an organized manner to their appropriate destination and if some of these packets are lost a request is sent to the server to resend the lost packets..for example a web browser....whilst UDP just outright sends packet to their destination regardless of if any of them is lost in order to compensate for speed...eg livestraming apps
+
+
+HANDS ON LAB
+## tracert lab
+Command: tracert -d 8.8.8.8
+Hops: 14
+Hop 1: 10.178.155.156 (compare with Default Gateway from ipconfig: [match)
+Notes: Hops 2 and 7 timed out (routers not replying to probes), but the trace
+still completed. Hops 1-6 are private carrier addresses; public hops start at 8.
+
+## Near and far
+wikipedia.org: 20 hops, last hop about 270-305 ms
+8.8.8.8: 14 hops, last hop about 55 ms
+Wikipedia is further away. It has more hops and a much higher last-hop time.
+Time is the stronger evidence because it shows the actual delay, while hop
+count only shows how many routers were crossed.
+
+## Packet loss
+Command: ping -n 20 8.8.8.8
+Lost: 0 (0% loss)
+Minimum: 46 ms
+Maximum: 77 ms
+Average: 57 ms
