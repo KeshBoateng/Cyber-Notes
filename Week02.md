@@ -1,222 +1,364 @@
-DAY!:
-• Bit: The absolute smallest unit of digital data. It is a single binary digit, representing either a 1 (on) or a 0 (off).
-• Byte: A group of 8 bits. A single byte represents a single character of text (like the letter "A"). File sizes are measured in bytes (Kilobytes, Megabytes, Gigabytes).
-• Bandwidth: The maximum capacity of your internet connection. Think of it like a highway: bandwidth is the number of lanes available to move traffic. More lanes mean more data can move at the same time.
-• Latency: The delay or travel time for data to go from your device to a server and back. Using the highway analogy, latency is the speed limit or the time it takes for a single car to complete the trip. Lower latency means a faster response (critical for gaming or live video calls).
+# Networking Fundamentals: Simple Notes
 
-How the Internet Works (The Big Picture)
+## 1. The Basics
 
-The internet is not a cloud or a magical entity; it is a massive global network of physical cables (fiber-optic lines, copper wires, and undersea cables) connecting millions of computers together.
-When you want to visit a website or send a message, your data is broken down into millions of tiny pieces called packets. Each packet contains a piece of the data, along with a "header" that lists the destination address and the sender's address. These packets travel independently across the global network of cables, bouncing from router to router, taking the fastest path available. Once they all arrive at the destination, they are glued back together into the original file or webpage.
+- **Network:** devices connected so they can share data.
+- **Bit** = 0 or 1. **Byte** = 8 bits.
+- **Bandwidth** = how much data can flow (the width of the pipe).
+- **Latency** = how long data takes to get there and back, in ms (the length of the pipe).
+- **Protocol:** a set of rules for how devices talk (TCP, UDP, HTTP, DNS, DHCP, ARP).
+- **The internet:** millions of networks joined by cables (including undersea ones). Your request is cut into **packets**, which cross routers and are rebuilt at the destination.
 
+---
 
-DAY2:
-A protocol is a well known set of rules that governs communication between devices
+## 2. Addresses: Who Is Who
 
-When a client sends a request to another device it adds its IP address so the server knows which address to reply back to
+| | IP address | MAC address |
+|---|---|---|
+| What | Logical address | Hardware ID of a network card |
+| Used for | Finding a device across networks | Delivery on the local network only |
+| Changes? | Yes (new network, new IP) | Usually no (can be randomised) |
+| Example | `10.33.128.30` | `4C-EB-BD-13-28-EF` |
 
-IPV4 -Mostly 32 bits long with 8 bits for each part of the address
+**IPv4:** 32 bits, four numbers (octets) from 0 to 255, e.g. `192.168.1.100`.
+**IPv6:** 128 bits, a far bigger address space.
 
-the first part represents the country
-the second part represents the region
-the third part represents subnetworks
-the fourth part represents the actual address of the device
+**Private vs public**
+- Private: used inside a local network (`10.x.x.x`, `192.168.x.x`). Not reachable directly from the internet.
+- Public: identifies your network on the internet. Given by your ISP.
 
-IPV6---IPV4s humble upgrade which uses a 128bits and provides about 340 undecilion unique addresses
+**NAT:** the router swaps your private IP for its public IP when you go online, and remembers who asked for what so replies reach the right device. Many devices share one public IP.
 
-DNS
-associates names like www.wiki.org with its corresponding ip address
-the computer uses the DNS to lookup domain names and get the associated ip address and then it connects to it.
+---
 
-So basically the client asks a DNS server for the ip address of a site the server asks another DNS server and when it finds it is sent back till it reaches the client and then it finally connects to the ip and sends its request
+## 3. Subnetting
 
-A network is a bunch of devices connected to each other
+**Subnet mask:** says which part of an IP is the *network* and which is the *host* (device).
 
-The DNS servers are connected in a distributed hierarchy
+`192.168.1.100` with mask `255.255.255.0` (`/24`): `192.168.1` is the network, `100` is the device.
 
-DNS spoofing:
-It is when a hacker taps into a DNS server and changes the ip address of a site to that of their own ip so as to impersonate the website so that clients may accidentally connect to it.
-Each section of an IP is called an octet
+| Address type | Meaning | Example |
+|---|---|---|
+| Network address | Names the network itself | 192.168.1.0 |
+| Host address | One device | 192.168.1.100 |
+| Broadcast | Sends to everyone on the subnet | 192.168.1.255 |
+| Default gateway | The way out to other networks (your router) | 192.168.1.254 |
 
-Ping is a network tool that uses ICMP (Internet Control Message Protocol) packets to determine the performance of a connection between devices, for example, if the connection exists or is reliable.
- 
-The time taken for ICMP packets travelling between devices is measured by ping.This measuring is done using ICMP's echo packet and then ICMP's echo reply from the target device.
+**Counting hosts for `/24`:** 32 − 24 = 8 host bits. Usable hosts = 2⁸ − 2 = **254** (minus network and broadcast).
+Range: `.1` to `.254`.
 
-NAT (Network Address Translation): your router swaps your
-private address for its public one on the way out, and back on
-the way in. So websites see the router's public address, never
-your 192.168 one.
-When your PC requests a webpage, it sends the request to your phone using its local 10. address. Your phone strips away that private tag, attaches its own public 102. address to the packet, and blasts it out to the internet. When the website replies, the phone does the reverse—passing the data back to your PC's private address
+**Why subnet?** Efficiency, security (separate groups, e.g. café staff vs customer Wi-Fi) and easier control.
 
-My Wifi Adapters IPV4 address
-\10.187.149.32
-\ 255.255.255.0
-\ 10.187.149.25
+---
 
-DAY3:
-TLD (Top-Level Domain)
-A TLD is the most righthand part of a domain name. So, for example, the tryhackme.com TLD is .com. There are two types of TLD, gTLD (Generic Top Level) and ccTLD (Country Code Top Level Domain). Historically a gTLD was meant to tell the user the domain name's purpose; for example, a .com would be for commercial purposes, .org for an organisation, .edu for education and .gov for government. And a ccTLD was used for geographical purposes, for example, .ca for sites based in Canada, .co.uk for sites based in the United Kingdom and so on. Due to such demand, there is an influx of new gTLDs ranging from .online , .club , .website , .biz and so many more.
+## 4. ARP: IP to MAC
 
-Second-Level Domain:
-Taking tryhackme.com as an example, the .com part is the TLD, and tryhackme is the Second Level Domain. When registering a domain name, the second-level domain is limited to 63 characters + the TLD and can only use a-z 0-9 and hyphens (cannot start or end with hyphens or have consecutive hyphens).
+- Wires and Wi-Fi deliver by **MAC**, but you know the **IP**. ARP bridges that.
+- **ARP request** (broadcast): "Who has 10.33.128.86?"
+- **ARP reply:** "I do. My MAC is 62-03-03-55-b0-00."
+- **ARP cache** stores the answers so it doesn't have to ask again.
+- Only works on the **local** network. For anything outside, you find the MAC of your gateway.
+- **Security:** ARP has no way to verify replies, so an attacker can lie (ARP spoofing).
 
-Subdomain:
-A subdomain sits on the left-hand side of the Second-Level Domain using a period to separate it; for example, in the name admin.tryhackme.com the admin part is the subdomain. A subdomain name has the same creation restrictions as a Second-Level Domain, being limited to 63 characters and can only use a-z 0-9 and hyphens (cannot start or end with hyphens or have consecutive hyphens). You can use multiple subdomains split with periods to create longer names, such as jupiter.servers.tryhackme.com. But the length must be kept to 253 characters or less. There is no limit to the number of subdomains you can create for your domain name.
+---
 
+## 5. DHCP: Automatic Addresses
 
- The journey, step by step
+DHCP hands out IP addresses automatically (your router or phone hotspot is usually the DHCP server).
 
-1. Your computer checks its own cache
-Have I looked this up recently? If yes, done.
-If no, ask the Recursive DNS Server.
+**DORA:**
+1. **D**iscover: "Any DHCP server out there?"
+2. **O**ffer: "You can have 10.33.128.30."
+3. **R**equest: "I'll take it."
+4. **A**CK: "Confirmed."
 
-2. Recursive DNS Server
-Usually your ISP’s, but you can choose another one.
-It has its own cache. Popular sites (Google, Facebook) are usually found here, so the search ends quickly.
-If it’s not cached, it starts the long search at the root servers.
+- **Dynamic IP:** from DHCP, on a time-limited **lease**. Can change.
+- **Static IP:** set by hand. Good for servers and printers.
 
-3. Root servers
-They don’t know the answer, but they know who to ask next.
-They look at the ending of the domain (.com, .org, etc.) and send you to the right TLD server.
+---
 
-4. TLD (Top Level Domain) server
-Handles one ending, e.g. all .com domains.
-It points you to the domain’s authoritative server (nameserver).
-Example: tryhackme.com → kip.ns.cloudflare.com and uma.ns.cloudflare.com.
-Domains have several nameservers as backups in case one goes down.
+## 6. DNS: Names to IPs
 
-5. Authoritative server
-This is the one that actually holds the DNS records for the domain.
-It’s also where the domain owner makes changes to the records.
-It sends the answer back to the Recursive server, which saves a copy and passes it to your computer.
-Quick flow
-Your computer cache
-      ↓ (not found)
-Recursive DNS Server (cache)
-      ↓ (not found)
-Root Server → "Go to the .com TLD"
-      ↓
-TLD Server → "Go to this nameserver"
-      ↓
-Authoritative Server → gives the IP address
-      ↓
-Answer travels back and gets cached
+DNS is the internet's phone book: `google.com` becomes an IP address.
 
+**The journey (cache first, then ask):**
+1. Your computer's cache
+2. Recursive DNS server (does the searching for you, usually your ISP)
+3. Root server ("go to the .com TLD")
+4. TLD server ("go to this nameserver")
+5. Authoritative server (holds the real records and gives the answer)
+6. Answer returns and is cached
 
-HANDS-ON work
-Name:    google.com
-Addresses:  2a00:1450:4003:804::200e
-          142.251.140.238
+| Server | One-liner |
+|---|---|
+| Recursive | Finds the answer for you |
+| Root | Where should I look? |
+| TLD | Which domain's server? |
+| Authoritative | Here's the real answer |
 
-MX Lookup:gmail.com       MX preference = 5, mail exchanger = gmail-smtp-in.l.google.com    
+**Reading a domain right to left:** `admin.tryhackme.com`
+- `.com` = TLD (gTLD like .com/.org, or ccTLD like .gh/.uk)
+- `tryhackme` = second-level domain (the part you buy)
+- `admin` = subdomain (created free by the owner)
+- Limits: 63 characters per part, 253 in total, only `a-z 0-9 -`, no hyphen at the start or end.
 
+**Record types**
 
-Windows IP Configuration
+| Record | Purpose |
+|---|---|
+| A | Name → IPv4 |
+| AAAA | Name → IPv6 |
+| CNAME | Name → another name (alias) |
+| MX | Mail servers (lowest priority number is tried first) |
+| NS | Which nameservers are in charge |
+| TXT | Free text, used for verification and email security |
+| PTR | IP → name (reverse lookup) |
 
-    tryhackme.com
-    ----------------------------------------
-    Record Name . . . . . : tryhackme.com
-    Record Type . . . . . : 1
-    Time To Live  . . . . : 247
-    Data Length . . . . . : 4
-    Section . . . . . . . : Answer
-    A (Host) Record . . . : 64.239.109.129
+**DNS TTL:** how many seconds a cached answer is kept. (Not the same as packet TTL.)
 
+**"Non-authoritative answer"** = the answer came from a cache or middleman, not from the domain's own nameserver. It doesn't mean the answer is wrong.
 
-    Record Name . . . . . : tryhackme.com
-    Record Type . . . . . : 1
-    Time To Live  . . . . : 247
-    Data Length . . . . . : 4
-    Section . . . . . . . : Answer
-    A (Host) Record . . . : 64.239.123.129
+**DNS spoofing:** tricking DNS (or the hosts file) so a real domain points to an attacker's IP.
 
+---
 
+## 7. Packets, Routers, TTL
 
-DAY4:
+- **Packet:** header (from, to, number, TTL) + payload (the data).
+- **Why packets?** A lost piece is cheap to resend, and many users share the same cables.
+- **Router:** reads the destination IP and forwards the packet one step closer.
+- **Hop:** one router on the path. Hop 1 is your own gateway.
+- **Packet TTL:** starts at 64 or 128. Each router subtracts 1. At 0 the packet is dropped, so lost packets can't loop forever.
+- **tracert** sends packets with TTL 1, 2, 3... so each router reports back and shows the path.
 
-1. Packets
-Packet = a small piece of data with a label.
-Think of moving a wardrobe from Kumasi to Accra in labelled pieces: “3 of 20, to Ama, Accra.” Pieces can take different trucks and arrive in any order. Ama rebuilds it from the labels.
-A packet has two parts:
-Header: from, to, and the packet number
-Payload: the actual data
-From: 192.168.8.101
-To:   142.250.200.14
-Packet 3 of 20, TTL 64
-PAYLOAD: ...a piece of the page
+---
 
-Why use packets?
+## 8. TCP vs UDP
 
-A lost piece is cheap to resend
-Many people can share the same cables
-2. Routers, hops and TTL
+| | TCP | UDP |
+|---|---|---|
+| Promise | Everything arrives, in order, lost data resent | No guarantee |
+| Start | Handshake | None |
+| Speed | Slower | Faster |
+| Use for | Web, email, downloads, payments | Calls, video, gaming, streaming, DNS |
+| Analogy | Registered parcel | Shouting across the road |
 
-Router: reads each packet’s destination IP and sends it one step closer.
-Hop: one router along the way. (Trotro idea: Kejetia → Circle → Kaneshie. Each station is a hop.)
-TTL (Time To Live): a countdown that starts at a number like 64 or 128. Every router subtracts 1. At 0 the packet is thrown away, so lost packets can’t circle forever.
+**Rule:** every byte must arrive → TCP. Speed matters more than a lost bit → UDP.
 
-You (TTL 64) → Router (63) → ISP (62) → Server gets 62
+---
 
-Hop 1 is always your own router, your Default Gateway.
-tracert uses TTL to map the path. It sends packets with TTL 1, then 2, then 3, and so on. Each router in turn drops the packet and reports back, so you see every hop.
-Don’t mix up the two TTLs: DNS TTL = seconds a saved answer lasts. Packet TTL = number of hops left.
+## 9. Network Health and Attacks
 
-3. TCP vs UDP
-	TCP	UDP
-Promise	Every packet arrives, in order. Lost ones are resent	Sent once, no checking, no resending
-Start	Handshake: “Hello?” “Hello, ready” “OK, sending”	None, just sends
-Speed	Slower	Faster
-Used for	Web pages, email, downloads, MoMo payments	Calls, video, live streams, games, DNS lookups
-Like	Registered parcel with a signature	Shouting across the road
+- **Ping** uses ICMP echo request/reply to test reachability and measure time.
+- **Packet loss:** packets that never arrive. 3 lost out of 20 = 15%.
+- **Latency:** the delay in ms.
+- **Good network:** 0% loss, small gap between min and max. **Weak network:** loss and big swings (e.g. 60 ms to 900 ms).
+- **DDoS:** many systems flood a server so real users can't get in. Attacks **availability**.
 
-How to choose:
+---
 
-Every byte must arrive (file, payment) → TCP
-Speed matters more than a lost bit (WhatsApp call) → UDP
-4. When packets go wrong
-Packet loss: packets that never arrive
-Latency: delay, measured in ms. Far servers and busy networks add more
-DDoS: flooding a server with so many packets that real ones can’t get through (attacks availability)
+## 10. Commands Cheat Sheet (Windows)
 
-Weak network example: a WhatsApp call breaks up (lost UDP packets) and lags. A download on the same network is slow, but the file arrives complete because TCP resends.
+| Command | What it does |
+|---|---|
+| `ipconfig` | Your IP, mask, gateway |
+| `ipconfig /all` | Adds MAC, DHCP and DNS details |
+| `ipconfig /displaydns` | Shows the DNS cache |
+| `ipconfig /flushdns` | Clears the DNS cache |
+| `ping 8.8.8.8` / `ping -n 20 8.8.8.8` | Test reachability / send 20 pings |
+| `tracert -d 8.8.8.8` | Show the route (`-d` = no name lookups) |
+| `nslookup google.com` | DNS lookup |
+| `nslookup -type=MX gmail.com` | Look up a specific record type |
+| `arp -a` | Show the ARP cache |
+| `Get-Content C:\Windows\System32\drivers\etc\hosts` | View the hosts file (PowerShell, view only) |
 
-5. Reading ping -n 20
-	Good network	Weak network
-Lost	0 (0% loss)	3 (15% loss)
-Min / Max	40 ms / 55 ms	60 ms / 900 ms
+---
 
-What to look for: loss above 0% and a big gap between minimum and maximum both point to a weak or busy network.
-Quick memory list
-Data is split into packets (header + payload)
-Routers pass packets along, one hop at a time
-TTL drops by 1 per hop and kills lost packets at 0
-tracert uses TTL to show the path
-TCP = reliable but slower. UDP = fast but may lose data
-Loss and latency show network health in ping
+# How It All Fits Together: One Simple Scenario
 
+**Story:** I open `google.com` on my laptop, which is connected to my phone's hotspot.
 
-Difference Between TCP and UDP
-When the TCP is used,packets are sent in an organized manner to their appropriate destination and if some of these packets are lost a request is sent to the server to resend the lost packets..for example a web browser....whilst UDP just outright sends packet to their destination regardless of if any of them is lost in order to compensate for speed...eg livestraming apps
+**The cast**
 
+| Who | Address | Role |
+|---|---|---|
+| My laptop | IP `10.33.128.30`, MAC `4C-EB-...` | The one asking |
+| My phone | `10.33.128.86`, MAC `62-03-...` | DHCP server, gateway, DNS forwarder, NAT |
+| Carrier's DNS server | (not seen) | Recursive DNS server |
+| Routers | many | Pass packets along, hop by hop |
+| Google's server | `142.251.x.x` | Has the website |
 
-HANDS ON LAB
-## tracert lab
-Command: tracert -d 8.8.8.8
-Hops: 14
-Hop 1: 10.178.155.156 (compare with Default Gateway from ipconfig: [match)
-Notes: Hops 2 and 7 timed out (routers not replying to probes), but the trace
-still completed. Hops 1-6 are private carrier addresses; public hops start at 8.
+**The steps, in order**
 
-## Near and far
-wikipedia.org: 20 hops, last hop about 270-305 ms
-8.8.8.8: 14 hops, last hop about 55 ms
-Wikipedia is further away. It has more hops and a much higher last-hop time.
-Time is the stronger evidence because it shows the actual delay, while hop
-count only shows how many routers were crossed.
+```
+STEP 0  DHCP     Laptop joins the hotspot.
+                 Laptop: "Anyone give me an address?"  (Discover)
+                 Phone:  "Take 10.33.128.30"           (Offer)
+                 Laptop: "OK"  Phone: "Confirmed"      (Request, ACK)
+                 Now the laptop knows: my IP, my gateway (.86), my DNS (.86).
 
-## Packet loss
-Command: ping -n 20 8.8.8.8
-Lost: 0 (0% loss)
-Minimum: 46 ms
-Maximum: 77 ms
-Average: 57 ms
+STEP 1  DNS      "What is google.com's IP?"
+                 Laptop cache? No → ask phone → phone asks carrier's
+                 recursive server → (Root → TLD → Authoritative if needed)
+                 Answer: 142.251.x.x. Cached for its TTL.
+                 (Sent over UDP: small and fast.)
+
+STEP 2  Subnet   Is 142.251.x.x on my network (10.33.128.x)?
+                 The subnet mask says NO → send it to the Default Gateway.
+
+STEP 3  ARP      I need the gateway's MAC, not just its IP.
+                 Laptop (broadcast): "Who has 10.33.128.86?"
+                 Phone: "Me, MAC 62-03-03-55-b0-00"  → saved in ARP cache.
+
+STEP 4  Packets  The request is cut into packets:
+                 header (from .30, to 142.251.x.x, TTL 128) + payload.
+                 Web pages use TCP, so a handshake happens first and
+                 lost packets get resent.
+                 Each packet is delivered to the phone's MAC.
+
+STEP 5  NAT      Phone swaps my private IP (.30) for its public IP,
+                 remembers who asked, and forwards to the carrier.
+
+STEP 6  Hops     Routers pass the packet along. Each takes 1 off the TTL.
+                 (tracert shows these hops. ping shows how long it took.)
+
+STEP 7  Reply    Google answers. The packets return the same way.
+                 NAT sends them back to .30. The laptop puts the
+                 packets in order and the page appears.
+```
+
+**How the parts connect (one line each)**
+
+| Part | Answers the question | Connects to |
+|---|---|---|
+| DHCP | "What's my IP and who is my gateway?" | Gives the laptop its IP, gateway and DNS |
+| DNS | "What's the IP of this name?" | Gives the IP that routing needs |
+| Subnet mask | "Is it on my network or not?" | Decides whether to go direct or via the gateway |
+| ARP | "What's the MAC for this IP?" | Needed to deliver to the gateway on the local network |
+| Packets and TCP/UDP | "How is the data sent?" | Carry the data once the address is known |
+| NAT | "How does a private IP use the internet?" | Done by the gateway before packets leave |
+| Routers, hops, TTL | "How does it cross the internet?" | Move packets towards the destination |
+| ping, tracert | "Is it working and how far is it?" | Measure the journey above |
+
+**One-line memory chain:**
+**DHCP** gives me an address → **DNS** finds the destination IP → **subnet mask** says "go via gateway" → **ARP** finds the gateway's MAC → **packets** carry the data → **NAT** hides my private IP → **routers** hop it across → the reply comes back the same way.
+
+**Where an attacker could interfere (ties to your labs):**
+- **Hosts file / DNS spoofing:** lie at Step 1 so I go to a fake IP.
+- **ARP spoofing:** lie at Step 3 so my traffic goes through the attacker first.
+- **DDoS:** flood the destination so real packets can't get through (Step 6 to 7).
+
+---
+
+# My Hands-On Labs
+
+> **Note:** I used my phone's hotspot. A hotspot can give a different address range each time it's turned on, so the IPs differ between days. Write the date and session next to each result.
+
+## Lab: nslookup
+
+- `nslookup google.com` → IPv4 `142.251.140.238`, IPv6 `2a00:1450:4003:804::200e`
+- `nslookup -type=MX gmail.com` → `gmail-smtp-in.l.google.com` (the mail server for Gmail)
+- The "Server" line showed my phone's address as `UnKnown`. That only means there is no PTR (reverse) record for it. The phone forwards my question to the real recursive server, which is why the answer was **non-authoritative**.
+
+## Lab: DNS cache (`ipconfig /displaydns`)
+
+- The cache holds names I never typed (Windows Update, Google certificate checks) because background apps do lookups too.
+- `login.live.com` showed a chain of **4 CNAMEs** before reaching the A records (big companies use this to steer traffic).
+- Browsers keep their own cache, so a site visited in the browser didn't appear. After `ping tryhackme.com` it did (type 1 = A record).
+- TTL counts down. `ipconfig /flushdns` empties the cache.
+
+## Lab: hosts file
+
+- Command: `Get-Content C:\Windows\System32\drivers\etc\hosts`
+- Lines that do **not** start with `#`: **[fill in your number, usually 0]**
+- **Why malware would add `6.6.6.6 mtn.com.gh`:** the hosts file is checked **before** DNS. That line forces my computer to send `mtn.com.gh` to the attacker's server, where a fake MTN page can steal logins. It can also be used to block antivirus update sites.
+
+## Lab: tracert
+
+- `tracert -d 8.8.8.8` → **14 hops**. Hops 2 and 7 timed out, but the trace still completed (some routers don't answer probes).
+- Hops 1 to 6 were private `10.x.x.x` carrier addresses. Public addresses started around hop 8.
+- **To finish:** in one session, run `ipconfig` and `tracert -d 8.8.8.8` together and check that hop 1 equals the Default Gateway.
+
+## Lab: near vs far
+
+| Destination | Hops | Last hop time |
+|---|---|---|
+| 8.8.8.8 (Google) | 14 | about 55 ms |
+| wikipedia.org | 20 | about 270 to 305 ms |
+
+Wikipedia is further away. **Time is the better evidence** because it shows the real delay, while hop count only shows routers crossed. Google likely has servers nearer to Ghana.
+
+## Lab: packet loss
+
+`ping -n 20 8.8.8.8` → Lost = 0 (**0% loss**), Min 46 ms, Max 77 ms, Avg 57 ms. Stable, good network. Reply TTL was 115, which suggests a start of 128 and about 13 routers on the way back (my inference).
+
+## Day 5 Lab: `ipconfig /all` (Wi-Fi adapter)
+
+| Setting | Value | About |
+|---|---|---|
+| Physical Address (MAC) | 4C-EB-BD-13-28-EF | My laptop's Wi-Fi card |
+| IPv4 Address | 10.33.128.30 | My laptop |
+| Subnet Mask | 255.255.255.0 | Network is 10.33.128.x |
+| DHCP Enabled | Yes | |
+| DHCP Server | 10.33.128.86 | My phone |
+| Lease Obtained | Sunday, November 15, 2026 12:33:58 PM | |
+| Lease Expires | Sunday, November 15, 2026 5:00:55 PM | |
+| Default Gateway | 10.33.128.86 | My phone |
+| DNS Servers | 10.33.128.86 | My phone (forwards to the real DNS) |
+
+**Trick to read it:** lines about *me* (IP, MAC, mask, lease) are the laptop. Lines about *who gave me this / where I send things* (gateway, DHCP server, DNS) are the phone. The laptop is `.30` and the phone is `.86`: two devices on the same network.
+
+(Earlier session: IP `10.187.149.32`, gateway `10.187.149.25`. Different day, different hotspot range.)
+
+## Day 5 Lab: `arp -a`
+
+Interface `10.33.128.30` (my laptop's Wi-Fi card):
+- Default Gateway `10.33.128.86` Physical Address: **62-03-03-55-b0-00** (my phone)
+- Dynamic entries: **1**
+- The `static` rows are not devices: `10.33.128.255` and `255.255.255.255` are broadcast, `224.0.0.x` are multicast.
+- The `192.168.56.1` block is a virtual adapter. Ignored.
+
+## Day 5 Lab: hex by hand
+
+Each hex digit = 4 bits. A=10, B=11, C=12, D=13, E=14, F=15.
+
+| Hex | Binary | Decimal |
+|---|---|---|
+| (a) 3C | 0011 1100 | 3×16 + 12 = **60** |
+| (b) FF | 1111 1111 | 15×16 + 15 = **255** |
+| (c) 0A | 0000 1010 | 0×16 + 10 = **10** |
+| My MAC's first pair, 4C | 0100 1100 | 4×16 + 12 = **76** |
+
+## Day 5 Lab: map my network
+
+- **Network:** my phone's hotspot.
+- **Router:** my phone. It is the DHCP server, default gateway and DNS forwarder (`10.33.128.86`).
+- **Devices:** my laptop (`10.33.128.30`) plus anything else connected.
+- **Topology:** **star.** Every device connects to one central point (the phone), which connects out to the carrier and the internet.
+
+## Day 5 Lab: push to git
+
+```
+git status
+git add .
+git commit -m "Week 2 Day 5 notes"
+git push
+```
+
+Check `git status` first so only your notes are staged.
+
+---
+
+# Quick Revision
+
+1. **IP vs MAC:** IP finds a device across networks; MAC delivers on the local network.
+2. **ARP:** IP → MAC (local only).
+3. **DHCP:** automatic IPs. Remember **DORA**.
+4. **DNS:** name → IP. Cache → Recursive → Root → TLD → Authoritative.
+5. **Subnet mask:** splits network from host.
+6. **NAT:** many private devices share one public IP.
+7. **TTL:** packet TTL = hops left. DNS TTL = seconds cached.
+8. **TCP:** reliable. **UDP:** fast.
+9. **ping** tests reachability, **tracert** shows the route.
+
+Networking is about how devices identify each other, find their destinations, and make sure data arrives in the right place.
